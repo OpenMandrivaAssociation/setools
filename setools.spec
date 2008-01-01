@@ -4,7 +4,7 @@
 
 Name: setools
 Version: %{setools_maj_ver}.%{setools_min_ver}
-Release: %mkrel 1
+Release: %mkrel 2
 License: GPLv2
 URL: http://oss.tresys.com/projects/setools
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
@@ -16,6 +16,7 @@ Source4: sediffx.desktop
 Summary: Policy analysis tools for SELinux
 Group: System/Base
 Requires: setools-libs = %{version}-%{release} setools-libs-tcl = %{version}-%{release} setools-gui = %{version}-%{release} setools-console = %{version}-%{release}
+BuildRequires: python python-devel
 %if %{gcj_support}
 BuildRequires: java-gcj-compat-devel
 %endif
