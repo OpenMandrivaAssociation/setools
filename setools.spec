@@ -16,7 +16,6 @@ Source4: sediffx.desktop
 Summary: Policy analysis tools for SELinux
 Group: System/Base
 Requires: setools-libs = %{version}-%{release} setools-libs-tcl = %{version}-%{release} setools-gui = %{version}-%{release} setools-console = %{version}-%{release}
-BuildRequires: python python-devel
 %if %{gcj_support}
 BuildRequires: java-gcj-compat-devel
 %endif
@@ -48,7 +47,7 @@ Requires: selinux >= %{selinux_ver}
 #Requires: libsepol >= %{sepol_ver} sqlite >= %{sqlite_ver}
 BuildRequires: flex bison pkgconfig
 BuildRequires: glibc-devel libstdc++-devel gcc gcc-c++
-BuildRequires: libselinux-devel >= %{selinux_ver} libsepol-devel >= %{sepol_ver} libsepol-static-devel >= %{sepol_ver}
+BuildRequires: selinux-devel >= %{selinux_ver} sepol-devel >= %{sepol_ver} sepol-static-devel >= %{sepol_ver}
 BuildRequires: sqlite-devel >= %{sqlite_ver} libxml2-devel
 BuildRequires: tcl-devel >= %{tcltk_ver}
 BuildRequires: autoconf >= %{autoconf_ver} automake
