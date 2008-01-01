@@ -44,11 +44,11 @@ License: LGPLv2
 Summary: Policy analysis support libraries for SELinux
 Group: System/Libraries
 Requires: selinux >= %{selinux_ver}
-#Requires: libsepol >= %{sepol_ver} sqlite >= %{sqlite_ver}
+#Requires: libsepol >= %{sepol_ver} sqlite3 >= %{sqlite_ver}
 BuildRequires: flex bison pkgconfig
 BuildRequires: glibc-devel libstdc++-devel gcc gcc-c++
 BuildRequires: selinux-devel >= %{selinux_ver} sepol-devel >= %{sepol_ver} sepol-static-devel >= %{sepol_ver}
-BuildRequires: sqlite-devel >= %{sqlite_ver} libxml2-devel
+BuildRequires: sqlite3-devel >= %{sqlite_ver} libxml2-devel
 BuildRequires: tcl-devel >= %{tcltk_ver}
 BuildRequires: autoconf >= %{autoconf_ver} automake
 
@@ -128,7 +128,7 @@ License: LGPLv2
 Summary: Policy analysis development files for SELinux
 Group: System/Libraries
 Requires: libselinux-devel >= %{selinux_ver} libsepol-devel >= %{sepol_ver} libsepol-static-devel >= %{sepol_ver} setools-libs = %{version}-%{release}
-BuildRequires: sqlite-devel >= %{sqlite_ver} libxml2-devel
+BuildRequires: sqlite3-devel >= %{sqlite_ver} libxml2-devel
 
 %description devel
 SETools is a collection of graphical tools, command-line tools, and
