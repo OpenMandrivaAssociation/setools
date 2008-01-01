@@ -45,7 +45,7 @@ Summary: Policy analysis support libraries for SELinux
 Group: System/Libraries
 Requires: selinux >= %{selinux_ver}
 #Requires: libsepol >= %{sepol_ver} sqlite >= %{sqlite_ver}
-BuildRequires: flex  bison  pkgconfig
+BuildRequires: flex bison pkgconfig
 BuildRequires: glibc-devel libstdc++-devel gcc gcc-c++
 BuildRequires: libselinux-devel >= %{selinux_ver} libsepol-devel >= %{sepol_ver} libsepol-static-devel >= %{sepol_ver}
 BuildRequires: sqlite-devel >= %{sqlite_ver} libxml2-devel
