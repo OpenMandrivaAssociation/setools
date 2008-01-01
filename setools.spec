@@ -355,4 +355,3 @@ rm -rf ${RPM_BUILD_ROOT}
 %config(noreplace) %{_sysconfdir}/security/console.apps/seaudit
 %{_datadir}/applications/*
 %attr(0644,root,root) %{_datadir}/pixmaps/*.png
-
