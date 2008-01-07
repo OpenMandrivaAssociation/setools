@@ -4,7 +4,7 @@
 
 Name: setools
 Version: %{setools_maj_ver}.%{setools_min_ver}
-Release: %mkrel 2
+Release: %mkrel 3
 License: GPLv2
 URL: http://oss.tresys.com/projects/setools
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
@@ -127,7 +127,7 @@ This package includes Tcl bindings for the following libraries:
 License: LGPLv2
 Summary: Policy analysis development files for SELinux
 Group: System/Libraries
-Requires: libselinux-devel >= %{selinux_ver} libsepol-devel >= %{sepol_ver} libsepol-static-devel >= %{sepol_ver} setools-libs = %{version}-%{release}
+Requires: selinux-devel >= %{selinux_ver} sepol-devel >= %{sepol_ver} sepol-static-devel >= %{sepol_ver} setools-libs = %{version}-%{release}
 BuildRequires: sqlite3-devel >= %{sqlite_ver} libxml2-devel
 
 %description devel
