@@ -1,10 +1,10 @@
 %define gcj_support 1
 %define setools_maj_ver 3.3
-%define setools_min_ver 2
+%define setools_min_ver 3
 
 Name: setools
 Version: %{setools_maj_ver}.%{setools_min_ver}
-Release: %mkrel 3
+Release: %mkrel 1
 License: GPLv2
 URL: http://oss.tresys.com/projects/setools
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
@@ -45,6 +45,8 @@ Summary: Policy analysis support libraries for SELinux
 Group: System/Libraries
 Requires: selinux >= %{selinux_ver}
 #Requires: libsepol >= %{sepol_ver} sqlite3 >= %{sqlite_ver}
+Requires: usermode-consoleonly
+BuildRequires: usermode-consoleonly
 BuildRequires: flex bison pkgconfig
 BuildRequires: glibc-devel libstdc++-devel gcc gcc-c++
 BuildRequires: selinux-devel >= %{selinux_ver} sepol-devel >= %{sepol_ver} sepol-static-devel >= %{sepol_ver}
@@ -207,7 +209,7 @@ install -p -m 644 apol/apol.png ${RPM_BUILD_ROOT}%{_datadir}/pixmaps/apol.png
 install -p -m 644 seaudit/seaudit.png ${RPM_BUILD_ROOT}%{_datadir}/pixmaps/seaudit.png
 install -p -m 644 sediff/sediffx.png ${RPM_BUILD_ROOT}%{_datadir}/pixmaps/sediffx.png
 desktop-file-install --dir ${RPM_BUILD_ROOT}%{_datadir}/applications %{SOURCE2} %{SOURCE3} %{SOURCE4}
-ln -sf consolehelper ${RPM_BUILD_ROOT}/%{_bindir}/seaudit
+ln -sf %{_bindir}/consolehelper ${RPM_BUILD_ROOT}/%{_bindir}/seaudit
 # replace absolute symlinks with relative symlinks
 ln -sf ../setools-%{setools_maj_ver}/qpol.jar ${RPM_BUILD_ROOT}/%{_javadir}/qpol-%{version}.jar
 ln -sf ../setools-%{setools_maj_ver}/apol.jar ${RPM_BUILD_ROOT}/%{_javadir}/apol-%{version}.jar
@@ -221,7 +223,7 @@ rm -f ${RPM_BUILD_ROOT}/%{_libdir}/*.a
 chmod 0755 ${RPM_BUILD_ROOT}/%{_libdir}/*.so.*
 chmod 0755 ${RPM_BUILD_ROOT}/%{_libdir}/%{name}/*/*.so.*
 chmod 0755 ${RPM_BUILD_ROOT}/%{pkg_py_arch}/*.so.*
-chmod 0755 ${RPM_BUILD_ROOT}/%{_bindir}/*
+#chmod 0755 ${RPM_BUILD_ROOT}/%{_bindir}/*
 chmod 0755 ${RPM_BUILD_ROOT}/%{_sbindir}/*
 chmod 0755 ${RPM_BUILD_ROOT}/%{setoolsdir}/seaudit-report-service
 chmod 0644 ${RPM_BUILD_ROOT}/%{tcllibdir}/*/pkgIndex.tcl
