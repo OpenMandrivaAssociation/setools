@@ -237,21 +237,33 @@ rm -rf ${RPM_BUILD_ROOT}
 
 %if %{gcj_support}
 %post libs-java
+%if %mdkversion < 200900
 /sbin/ldconfig
+%endif
 %{update_gcjdb}
 
 %postun libs-java
+%if %mdkversion < 200900
 /sbin/ldconfig
+%endif
 %{clean_gcjdb}
 %endif
 
+%if %mdkversion < 200900
 %post libs -p /sbin/ldconfig
+%endif
 
+%if %mdkversion < 200900
 %postun libs -p /sbin/ldconfig
+%endif
 
+%if %mdkversion < 200900
 %post libs-tcl -p /sbin/ldconfig
+%endif
 
+%if %mdkversion < 200900
 %postun libs-tcl -p /sbin/ldconfig
+%endif
 
 %files
 %defattr(-,root,root,-)
