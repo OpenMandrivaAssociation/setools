@@ -1,6 +1,6 @@
 %define gcj_support 1
 %define setools_maj_ver 3.3
-%define setools_min_ver 4
+%define setools_min_ver 5
 
 Name: setools
 Version: %{setools_maj_ver}.%{setools_min_ver}
@@ -92,7 +92,7 @@ Summary: Java bindings for SELinux policy analysis
 Group: Development/Java
 Requires: setools-libs = %{version}-%{release}
 BuildRequires: java-devel >= %{java_ver} swig >= %{swig_ver}
-BuildRequires: java-rpmbuild
+BuildRequires: java-rpmbuild jpackage-utils sharutils
 
 %description libs-java
 SETools is a collection of graphical tools, command-line tools, and
@@ -192,10 +192,15 @@ This package includes the following graphical tools:
 %setup -q
 
 %build
+export LDFLAGS="-lpython2.5 -ltcl"
+export CLASSPATH=
+export JAR=%{jar}
+export JAVA=%{java}
+export JAVAC=%{javac}
 %configure2_5x --disable-bwidget-check --disable-selinux-check --enable-swig-python --enable-swig-java --enable-swig-tcl
 # work around issue with gcc 4.3 + gnu99 + swig-generated code:
 sed -i -e 's:$(CC):gcc -std=gnu89:' libseaudit/swig/python/Makefile
-%make
+%{__make}
 
 %install
 rm -rf ${RPM_BUILD_ROOT}
