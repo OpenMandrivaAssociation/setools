@@ -192,7 +192,7 @@ This package includes the following graphical tools:
 %setup -q
 
 %build
-export LDFLAGS="-lpython2.5 -ltcl"
+export LDFLAGS="-lpython%pyver -ltcl"
 export CLASSPATH=
 export JAR=%{jar}
 export JAVA=%{java}
