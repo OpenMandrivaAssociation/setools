@@ -1,6 +1,7 @@
 %define gcj_support 1
 %define setools_maj_ver 3.3
 %define setools_min_ver 5
+%define Werror_cflags %nil
 
 Name: setools
 Version: %{setools_maj_ver}.%{setools_min_ver}
