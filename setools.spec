@@ -5,7 +5,7 @@
 
 Name: setools
 Version: %{setools_maj_ver}.%{setools_min_ver}
-Release: %mkrel 3
+Release: %mkrel 4
 License: GPLv2
 URL: http://oss.tresys.com/projects/setools
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
