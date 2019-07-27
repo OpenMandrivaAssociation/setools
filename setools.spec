@@ -1,157 +1,53 @@
-%define gcj_support 1
-%define setools_maj_ver 3.3
-%define setools_min_ver 5
-%define Werror_cflags %nil
+# sitelib for noarch packages, sitearch for others (remove the unneeded one)
+%{!?__python2: %global __python2 %__python}
+%{!?python2_sitelib: %global python2_sitelib %(%{__python2} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")}
+%{!?python2_sitearch: %global python2_sitearch %(%{__python2} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib(1))")}
 
-Name: setools
-Version: %{setools_maj_ver}.%{setools_min_ver}
-Release: %mkrel 4
-License: GPLv2
-URL: http://oss.tresys.com/projects/setools
-BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
-Source: http://oss.tresys.com/projects/setools/chrome/site/dists/setools-%{version}/setools-%{version}.tar.gz
-Source1: setools.pam
-Source2: apol.desktop
-Source3: seaudit.desktop
-Source4: sediffx.desktop
-Summary: Policy analysis tools for SELinux
-Group: System/Base
-Requires: setools-libs = %{version}-%{release} setools-libs-tcl = %{version}-%{release} setools-gui = %{version}-%{release} setools-console = %{version}-%{release}
-%if %{gcj_support}
-BuildRequires: java-gcj-compat-devel
-%endif
+# % global setools_pre_ver beta.1.8e09d95
+# % global gitver f1e5b20
 
-# external requirements
-%define autoconf_ver 2.59
-%define bwidget_ver 1.8
-%define java_ver 1.2
-%define gtk_ver 2.8
-%define python_ver 2.3
-%define sepol_ver 1.12.27
-%define selinux_ver 1.30
-%define sqlite_ver 3.2.0
-%define swig_ver 1.3.28
-%define tcltk_ver 8.4.9
+%global sepol_ver 2.8-1
+%global selinux_ver 2.8-1
+
+Name:           setools
+Version:        4.1.1
+Release:        14%{?setools_pre_ver:.%{setools_pre_ver}}%{?dist}
+Summary:        Policy analysis tools for SELinux
+
+License:        GPLv2
+URL:            https://github.com/SELinuxProject/setools/wiki
+Source0:        https://github.com/SELinuxProject/setools/archive/%{version}%{?setools_pre_ver:-%{setools_pre_ver}}.tar.gz
+Source1:        setools.pam
+Source2:        apol.desktop
+Patch1:         0001-Do-not-use-Werror-during-build.patch
+Patch2:         0002-Do-not-export-use-setools.InfoFlowAnalysis-and-setoo.patch
+Patch3:         0003-bswap_-macros-are-defined-in-byteswap.h.patch
+Patch4:         0004-Add-support-for-SCTP-protocol.patch
+
+Obsoletes:      setools < 4.0.0, setools-devel < 4.0.0
+BuildRequires:  flex, bison
+BuildRequires:  glibc-devel, gcc, git
+BuildRequires:  libsepol-devel >= %{sepol_ver}
+BuildRequires:	sepol-static-devel >= %{sepol_ver}
+BuildRequires:  qt5-qtbase-devel
+BuildRequires:  swig
+BuildRequires:  python2-devel
+BuildRequires:  python2-setuptools
+BuildRequires:  python3-devel
+BuildRequires:  python3dist(setuptools)
+
+# BuildArch:      
+Requires:       python3-%{name} = %{version}-%{release}
 
 %description
 SETools is a collection of graphical tools, command-line tools, and
-libraries designed to facilitate SELinux policy analysis.
+Python modules designed to facilitate SELinux policy analysis.
 
-This meta-package depends upon the main packages necessary to run
-SETools.
-
-%package libs
-License: LGPLv2
-Summary: Policy analysis support libraries for SELinux
-Group: System/Libraries
-Requires: selinux >= %{selinux_ver}
-#Requires: libsepol >= %{sepol_ver} sqlite3 >= %{sqlite_ver}
-Requires: usermode-consoleonly
-BuildRequires: usermode-consoleonly
-BuildRequires: flex bison pkgconfig
-BuildRequires: glibc-devel libstdc++-devel gcc gcc-c++
-BuildRequires: selinux-devel >= %{selinux_ver} sepol-devel >= %{sepol_ver} sepol-static-devel >= %{sepol_ver}
-BuildRequires: sqlite3-devel >= %{sqlite_ver} libxml2-devel
-BuildRequires: tcl-devel >= %{tcltk_ver}
-BuildRequires: autoconf >= %{autoconf_ver} automake
-
-%description libs
-SETools is a collection of graphical tools, command-line tools, and
-libraries designed to facilitate SELinux policy analysis.
-
-This package includes the following run-time libraries:
-
-  libapol       policy analysis library
-  libpoldiff    semantic policy difference library
-  libqpol       library that abstracts policy internals
-  libseaudit    parse and filter SELinux audit messages in log files
-  libsefs       SELinux file contexts library
-
-%package libs-python
-License: LGPLv2
-Summary: Python bindings for SELinux policy analysis
-Group: Development/Python
-Requires: setools-libs = %{version}-%{release}
-%py_requires -d
-BuildRequires: swig >= %{swig_ver}
-
-%description libs-python
-SETools is a collection of graphical tools, command-line tools, and
-libraries designed to facilitate SELinux policy analysis.
-
-This package includes Python bindings for the following libraries:
-
-  libapol       policy analysis library
-  libpoldiff    semantic policy difference library
-  libqpol       library that abstracts policy internals
-  libseaudit    parse and filter SELinux audit messages in log files
-  libsefs       SELinux file contexts library
-
-%package libs-java
-License: LGPLv2
-Summary: Java bindings for SELinux policy analysis
-Group: Development/Java
-Requires: setools-libs = %{version}-%{release}
-BuildRequires: java-devel >= %{java_ver} swig >= %{swig_ver}
-BuildRequires: java-rpmbuild jpackage-utils sharutils
-
-%description libs-java
-SETools is a collection of graphical tools, command-line tools, and
-libraries designed to facilitate SELinux policy analysis.
-
-This package includes Java bindings for the following libraries:
-
-  libapol       policy analysis library
-  libpoldiff    semantic policy difference library
-  libqpol       library that abstracts policy internals
-  libseaudit    parse and filter SELinux audit messages in log files
-  libsefs       SELinux file contexts library
-
-%package libs-tcl
-License: LGPLv2
-Summary: Tcl bindings for SELinux policy analysis
-Group: Development/Other
-Requires: setools-libs = %{version}-%{release}
-BuildRequires: tcl-devel >= %{tcltk_ver} swig >= %{swig_ver}
-
-%description libs-tcl
-SETools is a collection of graphical tools, command-line tools, and
-libraries designed to facilitate SELinux policy analysis.
-
-This package includes Tcl bindings for the following libraries:
-
-  libapol       policy analysis library
-  libpoldiff    semantic policy difference library
-  libqpol       library that abstracts policy internals
-  libseaudit    parse and filter SELinux audit messages in log files
-  libsefs       SELinux file contexts library
-
-%package devel
-License: LGPLv2
-Summary: Policy analysis development files for SELinux
-Group: System/Libraries
-Requires: selinux-devel >= %{selinux_ver} sepol-devel >= %{sepol_ver} sepol-static-devel >= %{sepol_ver} setools-libs = %{version}-%{release}
-BuildRequires: sqlite3-devel >= %{sqlite_ver} libxml2-devel
-
-%description devel
-SETools is a collection of graphical tools, command-line tools, and
-libraries designed to facilitate SELinux policy analysis.
-
-This package includes header files and archives for the following
-libraries:
-
-  libapol       policy analysis library
-  libpoldiff    semantic policy difference library
-  libqpol       library that abstracts policy internals
-  libseaudit    parse and filter SELinux audit messages in log files
-  libsefs       SELinux file contexts library
-
-%package console
-Summary: Policy analysis command-line tools for SELinux
-Group: System/Base
-License: GPLv2
-Requires: setools-libs = %{version}-%{release}
-Requires: selinux >= %{selinux_ver}
+%package     console
+Summary:     Policy analysis command-line tools for SELinux
+License:     GPLv2
+Requires:    python3-setools = %{version}-%{release}
+Requires:    libselinux >= %{selinux_ver}
 
 %description console
 SETools is a collection of graphical tools, command-line tools, and
@@ -159,219 +55,122 @@ libraries designed to facilitate SELinux policy analysis.
 
 This package includes the following console tools:
 
-  seaudit-report  audit log analysis tool
-  sechecker       SELinux policy checking tool
-  secmds          command line tools: seinfo, sesearch, findcon,
-                  replcon, and indexcon
-  sediff          semantic policy difference tool
+  sediff       Compare two policies to find differences.
+  seinfo       List policy components.
+  sesearch     Search rules (allow, type_transition, etc.)
 
-%package gui
-Summary: Policy analysis graphical tools for SELinux
-Group: System/Base
-Requires: tcl >= %{tcltk_ver} tk >= %{tcltk_ver} bwidget >= %{bwidget_ver}
-Requires: setools-libs = %{version}-%{release} setools-libs-tcl = %{version}-%{release}
-Requires: glib2 gtk2 >= %{gtk_ver} usermode-consoleonly
-BuildRequires: gtk2-devel >= %{gtk_ver} libglade2-devel libxml2-devel tk-devel >= %{tcltk_ver}
-BuildRequires: desktop-file-utils
 
-%description gui
+%package     console-analyses
+Summary:     Policy analysis command-line tools for SELinux
+License:     GPLv2
+Requires:    python3-setools = %{version}-%{release}
+Requires:    libselinux >= %{selinux_ver}
+Requires:    python3-networkx
+
+%description console-analyses
 SETools is a collection of graphical tools, command-line tools, and
 libraries designed to facilitate SELinux policy analysis.
 
-This package includes the following graphical tools:
+This package includes the following console tools:
 
-  apol          policy analysis tool
-  seaudit       audit log analysis tool
-  sediffx       semantic policy difference tool
+  sedta        Perform domain transition analyses.
+  seinfoflow   Perform information flow analyses.
 
-%define setoolsdir %{_datadir}/setools-%{setools_maj_ver}
-%define pkg_py_lib %{python_sitelib}/setools
-%define pkg_py_arch %{python_sitearch}/setools
-%define tcllibdir %{_libdir}/setools
+
+%package     -n python2-setools
+Summary:     Policy analysis tools for SELinux  
+Provides:	python2-setools = %{EVRD}
+Provides: %{name}-python = %{version}-%{release}
+Obsoletes: %{name}-python < %{version}-%{release}
+Requires:    python2-enum34
+Requires:    python2-setuptools
+
+%description -n python2-setools
+SETools is a collection of graphical tools, command-line tools, and
+Python 2 modules designed to facilitate SELinux policy analysis.
+
+%package     -n python3-setools
+Summary:     Policy analysis tools for SELinux  
+Obsoletes:   setools-libs < 4.0.0
+Provides:	python3-setools
+# Remove before F30
+Provides: %{name}-python3 = %{version}-%{release}
+Obsoletes: %{name}-python3 < %{version}-%{release}
+Requires:    python3-setuptools
+
+%description -n python3-setools
+SETools is a collection of graphical tools, command-line tools, and
+Python 3 modules designed to facilitate SELinux policy analysis.
+
+%package     gui
+Summary:     Policy analysis graphical tools for SELinux
+Requires:    python3-setools = %{version}-%{release}
+Requires:    python3-qt5
+Requires:    python3-networkx
+
+%description gui
+SETools is a collection of graphical tools, command-line tools, and
+Python modules designed to facilitate SELinux policy analysis.
 
 %prep
-%setup -q
+%autosetup -p 1 -S git
+
+cp -a ../setools-%{version}%{?setools_pre_ver:-%{setools_pre_ver}} ../setools-%{version}%{?setools_pre_ver:-%{setools_pre_ver}}-python2
 
 %build
-export LDFLAGS="-lpython%pyver -ltcl"
-export CLASSPATH=
-export JAR=%{jar}
-export JAVA=%{java}
-export JAVAC=%{javac}
-%configure2_5x --disable-bwidget-check --disable-selinux-check --enable-swig-python --enable-swig-java --enable-swig-tcl
-# work around issue with gcc 4.3 + gnu99 + swig-generated code:
-sed -i -e 's:$(CC):gcc -std=gnu89:' libseaudit/swig/python/Makefile
-%{__make}
+# Remove CFLAGS=... for noarch packages (unneeded)
+CFLAGS="%{optflags}" %{__python3} setup.py build
+
+pushd ../setools-%{version}%{?setools_pre_ver:-%{setools_pre_ver}}-python2
+# Remove CFLAGS=... for noarch packages (unneeded)
+CFLAGS="%{optflags}" %{__python2} setup.py build
+popd
+
 
 %install
-rm -rf ${RPM_BUILD_ROOT}
-make DESTDIR=${RPM_BUILD_ROOT} INSTALL="install -p" install
-mkdir -p ${RPM_BUILD_ROOT}%{_datadir}/applications
-mkdir -p ${RPM_BUILD_ROOT}%{_datadir}/pixmaps
-install -d -m 755 ${RPM_BUILD_ROOT}%{_sysconfdir}/pam.d
-install -p -m 644 %{SOURCE1} ${RPM_BUILD_ROOT}%{_sysconfdir}/pam.d/seaudit
-install -d -m 755 ${RPM_BUILD_ROOT}%{_sysconfdir}/security/console.apps
-install -p -m 644 packages/rpm/seaudit.console ${RPM_BUILD_ROOT}%{_sysconfdir}/security/console.apps/seaudit
-install -d -m 755 ${RPM_BUILD_ROOT}%{_datadir}/applications
-install -p -m 644 apol/apol.png ${RPM_BUILD_ROOT}%{_datadir}/pixmaps/apol.png
-install -p -m 644 seaudit/seaudit.png ${RPM_BUILD_ROOT}%{_datadir}/pixmaps/seaudit.png
-install -p -m 644 sediff/sediffx.png ${RPM_BUILD_ROOT}%{_datadir}/pixmaps/sediffx.png
-desktop-file-install --dir ${RPM_BUILD_ROOT}%{_datadir}/applications %{SOURCE2} %{SOURCE3} %{SOURCE4}
-ln -sf %{_bindir}/consolehelper ${RPM_BUILD_ROOT}/%{_bindir}/seaudit
-# replace absolute symlinks with relative symlinks
-ln -sf ../setools-%{setools_maj_ver}/qpol.jar ${RPM_BUILD_ROOT}/%{_javadir}/qpol-%{version}.jar
-ln -sf ../setools-%{setools_maj_ver}/apol.jar ${RPM_BUILD_ROOT}/%{_javadir}/apol-%{version}.jar
-ln -sf ../setools-%{setools_maj_ver}/poldiff.jar ${RPM_BUILD_ROOT}/%{_javadir}/poldiff-%{version}.jar
-ln -sf ../setools-%{setools_maj_ver}/seaudit.jar ${RPM_BUILD_ROOT}/%{_javadir}/seaudit-%{version}.jar
-ln -sf ../setools-%{setools_maj_ver}/sefs.jar ${RPM_BUILD_ROOT}/%{_javadir}/sefs-%{version}.jar
-(cd %{buildroot}%{_javadir} && for jar in *-%{version}*; do %{__ln_s} ${jar} `/bin/echo ${jar} | %{__sed} "s|-%{version}||g"`; done)
-# remove static libs
-rm -f ${RPM_BUILD_ROOT}/%{_libdir}/*.a
-# ensure permissions are correct
-chmod 0755 ${RPM_BUILD_ROOT}/%{_libdir}/*.so.*
-chmod 0755 ${RPM_BUILD_ROOT}/%{_libdir}/%{name}/*/*.so.*
-chmod 0755 ${RPM_BUILD_ROOT}/%{pkg_py_arch}/*.so.*
-#chmod 0755 ${RPM_BUILD_ROOT}/%{_bindir}/*
-chmod 0755 ${RPM_BUILD_ROOT}/%{_sbindir}/*
-chmod 0755 ${RPM_BUILD_ROOT}/%{setoolsdir}/seaudit-report-service
-chmod 0644 ${RPM_BUILD_ROOT}/%{tcllibdir}/*/pkgIndex.tcl
+pushd ../setools-%{version}%{?setools_pre_ver:-%{setools_pre_ver}}-python2
+%{__python2} setup.py install --root %{buildroot}
+popd
 
-%if %{gcj_support}
-%{_bindir}/aot-compile-rpm
+rm -rf %{buildroot}%{_bindir}
+%{__python3} setup.py install --root %{buildroot}
+
+%check
+%if %{?_with_check:1}%{!?_with_check:0}
+%{__python3} setup.py test
+
+pushd ../setools-%{version}%{?setools_pre_ver:-%{setools_pre_ver}}-python2
+%{__python2} setup.py test
+popd
 %endif
 
-%clean
-rm -rf ${RPM_BUILD_ROOT}
-
-%if %{gcj_support}
-%post libs-java
-%if %mdkversion < 200900
-/sbin/ldconfig
-%endif
-%{update_gcjdb}
-
-%postun libs-java
-%if %mdkversion < 200900
-/sbin/ldconfig
-%endif
-%{clean_gcjdb}
-%endif
-
-%if %mdkversion < 200900
-%post libs -p /sbin/ldconfig
-%endif
-
-%if %mdkversion < 200900
-%postun libs -p /sbin/ldconfig
-%endif
-
-%if %mdkversion < 200900
-%post libs-tcl -p /sbin/ldconfig
-%endif
-
-%if %mdkversion < 200900
-%postun libs-tcl -p /sbin/ldconfig
-%endif
 
 %files
-%defattr(-,root,root,-)
-
-%files libs
-%defattr(-,root,root,-)
-%doc AUTHORS ChangeLog COPYING COPYING.GPL COPYING.LGPL KNOWN-BUGS NEWS README
-%{_libdir}/libqpol.so.*
-%{_libdir}/libapol.so.*
-%{_libdir}/libpoldiff.so.*
-%{_libdir}/libsefs.so.*
-%{_libdir}/libseaudit.so.*
-%dir %{setoolsdir}
-
-%files libs-python
-%defattr(-,root,root,-)
-%{pkg_py_lib}/
-%ifarch x86_64 ppc64
-%{pkg_py_arch}/
-%endif
-
-%files libs-java
-%defattr(-,root,root,-)
-%{_libdir}/libjqpol.so.*
-%{_libdir}/libjapol.so.*
-%{_libdir}/libjpoldiff.so.*
-%{_libdir}/libjseaudit.so.*
-%{_libdir}/libjsefs.so.*
-%{setoolsdir}/*.jar
-%{_javadir}/*.jar
-%if %{gcj_support}
-%dir %{_libdir}/gcj/%{name}
-%attr(-,root,root) %{_libdir}/gcj/%{name}/*
-%endif
-
-%files libs-tcl
-%defattr(-,root,root,-)
-%{tcllibdir}/qpol/
-%{tcllibdir}/apol/
-%{tcllibdir}/poldiff/
-%{tcllibdir}/seaudit/
-%{tcllibdir}/sefs/
-
-%files devel
-%defattr(-,root,root,-)
-%{_libdir}/*.so
-%{_libdir}/pkgconfig/*
-%{_includedir}/qpol/
-%{_includedir}/apol/
-%{_includedir}/poldiff/
-%{_includedir}/seaudit/
-%{_includedir}/sefs/
 
 %files console
-%defattr(-,root,root,-)
+%{_bindir}/sediff
 %{_bindir}/seinfo
 %{_bindir}/sesearch
-%{_bindir}/indexcon
-%{_bindir}/findcon
-%{_bindir}/replcon
-%{_bindir}/sechecker
-%{_bindir}/sediff
-%{_bindir}/seaudit-report
-%{setoolsdir}/sechecker-profiles/
-%{setoolsdir}/sechecker_help.txt
-%{setoolsdir}/seaudit-report-service
-%{setoolsdir}/seaudit-report.conf
-%{setoolsdir}/seaudit-report.css
-%{_mandir}/man1/findcon.1*
-%{_mandir}/man1/indexcon.1*
-%{_mandir}/man1/replcon.1*
-%{_mandir}/man1/sechecker.1*
-%{_mandir}/man1/sediff.1*
-%{_mandir}/man1/seinfo.1*
-%{_mandir}/man1/sesearch.1*
-%{_mandir}/man8/seaudit-report.8*
+%{_mandir}/man1/sediff*
+%{_mandir}/man1/seinfo*
+%{_mandir}/man1/sesearch*
+
+%files console-analyses
+%{_bindir}/sedta
+%{_bindir}/seinfoflow
+%{_mandir}/man1/sedta*
+%{_mandir}/man1/seinfoflow*
+
+%files -n python2-setools
+%license COPYING COPYING.GPL COPYING.LGPL
+%{python2_sitearch}/*
+
+%files -n python3-setools
+%license COPYING COPYING.GPL COPYING.LGPL
+%{python3_sitearch}/setools
+%{python3_sitearch}/setools-*
 
 %files gui
-%defattr(-,root,root,-)
-%{_bindir}/seaudit
-%{_bindir}/sediffx
 %{_bindir}/apol
-%{tcllibdir}/apol_tcl/
-%{setoolsdir}/sediff_help.txt
-%{setoolsdir}/apol_help.txt
-%{setoolsdir}/domaintrans_help.txt
-%{setoolsdir}/file_relabel_help.txt
-%{setoolsdir}/infoflow_help.txt
-%{setoolsdir}/types_relation_help.txt
-%{setoolsdir}/apol_perm_mapping_*
-%{setoolsdir}/seaudit_help.txt
-%{setoolsdir}/*.glade
-%{setoolsdir}/*.png
-%{setoolsdir}/apol.gif
-%{setoolsdir}/dot_seaudit
-%{_mandir}/man1/apol.1*
-%{_mandir}/man1/sediffx.1*
-%{_mandir}/man8/seaudit.8*
-%{_sbindir}/seaudit
-%config(noreplace) %{_sysconfdir}/pam.d/seaudit
-%config(noreplace) %{_sysconfdir}/security/console.apps/seaudit
-%{_datadir}/applications/*
-%attr(0644,root,root) %{_datadir}/pixmaps/*.png
+%{python3_sitearch}/setoolsgui
+%{_mandir}/man1/apol*

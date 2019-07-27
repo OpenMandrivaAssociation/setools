@@ -1,0 +1,158 @@
+From 3ef6369a22691e8e11cbf63f37b114941b3577a1 Mon Sep 17 00:00:00 2001
+From: Vit Mojzis <vmojzis@redhat.com>
+Date: Mon, 16 Apr 2018 20:46:20 +0200
+Subject: [PATCH] Add support for SCTP protocol
+
+Fixes: https://bugzilla.redhat.com/show_bug.cgi?id=1568333
+
+Signed-off-by: Vit Mojzis <vmojzis@redhat.com>
+---
+ libqpol/include/qpol/linux_types.h |  1 +
+ libqpol/policy_define.c            |  5 +++++
+ setools/perm_map                   | 36 +++++++++++++++++++++++++++---
+ setools/policyrep/netcontext.py    |  5 +++++
+ 4 files changed, 44 insertions(+), 3 deletions(-)
+
+diff --git a/libqpol/include/qpol/linux_types.h b/libqpol/include/qpol/linux_types.h
+index c3c056b..0985162 100644
+--- a/libqpol/include/qpol/linux_types.h
++++ b/libqpol/include/qpol/linux_types.h
+@@ -12,6 +12,7 @@ typedef uint16_t __u16;
+ #define s6_addr32	__u6_addr32
+ 
+ #define IPPROTO_DCCP 33
++#define IPPROTO_SCTP 132
+ #endif
+ 
+ #endif
+diff --git a/libqpol/policy_define.c b/libqpol/policy_define.c
+index dcc69fc..1e623a3 100644
+--- a/libqpol/policy_define.c
++++ b/libqpol/policy_define.c
+@@ -44,6 +44,9 @@
+ #ifndef IPPROTO_DCCP
+ #define IPPROTO_DCCP 33
+ #endif
++#ifndef IPPROTO_SCTP
++#define IPPROTO_SCTP 132
++#endif
+ #include <arpa/inet.h>
+ #include <stdlib.h>
+ #include <limits.h>
+@@ -4933,6 +4936,8 @@ int define_port_context(unsigned int low, unsigned int high)
+ 		protocol = IPPROTO_UDP;
+ 	} else if ((strcmp(id, "dccp") == 0) || (strcmp(id, "DCCP") == 0)) {
+ 		protocol = IPPROTO_DCCP;
++	} else if ((strcmp(id, "sctp") == 0) || (strcmp(id, "SCTP") == 0)) {
++		protocol = IPPROTO_SCTP;
+ 	} else {
+ 		yyerror2("unrecognized protocol %s", id);
+ 		goto bad;
+diff --git a/setools/perm_map b/setools/perm_map
+index 0a9f91c..8bd34f5 100644
+--- a/setools/perm_map
++++ b/setools/perm_map
+@@ -27,7 +27,7 @@
+ # Look to the examples below for further clarification.
+ #
+ # Number of object classes.
+-95
++96
+ 
+ class netlink_audit_socket 27
+          nlmsg_relay         w        10
+@@ -376,7 +376,7 @@ class file 22
+              quotaon         b         1
+               swapon         b         1
+ 
+-class node 11
++class node 13
+           rawip_recv         r        10
+             tcp_recv         r        10
+             udp_recv         r        10
+@@ -385,6 +385,8 @@ class node 11
+             udp_send         w        10
+            dccp_recv         r        10
+            dccp_send         w        10
++           sctp_recv         r        10
++           sctp_send         w        10
+         enforce_dest         n         1
+               sendto         w        10
+             recvfrom         r        10
+@@ -699,6 +701,32 @@ class dccp_socket 24
+            relabelto         w        10
+               listen         r         1
+ 
++class sctp_socket 24
++           node_bind         n         1
++        name_connect         w        10
++              append         w        10
++                bind         w         1
++             connect         w         1
++              create         w         1
++               write         w        10
++         relabelfrom         r        10
++               ioctl         n         1
++           name_bind         n         1
++              sendto         w        10
++            recv_msg         r        10
++            send_msg         w        10
++             getattr         r         7
++             setattr         w         7
++              accept         r         1
++              getopt         r         1
++                read         r        10
++              setopt         w         1
++            shutdown         w         1
++            recvfrom         r        10
++                lock         n         1
++           relabelto         w        10
++              listen         r         1
++
+ class netlink_firewall_socket 24
+          nlmsg_write         w        10
+           nlmsg_read         r        10
+@@ -973,7 +1001,7 @@ class key_socket 22
+            relabelto         w        10
+               listen         r         1
+ 
+-class netif 10
++class netif 12
+           rawip_recv         r        10
+             tcp_recv         r        10
+             udp_recv         r        10
+@@ -984,6 +1012,8 @@ class netif 10
+             udp_send         w        10
+            dccp_recv         r        10
+            dccp_send         w        10
++           sctp_recv         r        10
++           sctp_send         w        10
+ 
+ class packet_socket 22
+               append         w        10
+diff --git a/setools/policyrep/netcontext.py b/setools/policyrep/netcontext.py
+index 9a01fc5..630b42c 100644
+--- a/setools/policyrep/netcontext.py
++++ b/setools/policyrep/netcontext.py
+@@ -35,6 +35,10 @@ try:
+     IPPROTO_DCCP = getprotobyname("dccp")
+ except socket.error:
+     IPPROTO_DCCP = 33
++try:
++    IPPROTO_SCTP = getprotobyname("sctp")
++except socket.error:
++    IPPROTO_SCTP = 132
+ 
+ 
+ def netifcon_factory(policy, name):
+@@ -161,6 +165,7 @@ class PortconProtocol(int, PolicyEnum):
+     tcp = IPPROTO_TCP
+     udp = IPPROTO_UDP
+     dccp = IPPROTO_DCCP
++    sctp = IPPROTO_SCTP
+ 
+ 
+ class Portcon(NetContext):
+-- 
+2.18.0
+

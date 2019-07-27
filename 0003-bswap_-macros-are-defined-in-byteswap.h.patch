@@ -1,0 +1,26 @@
+From 2ac588919dd96d3d624e6ec20c67d1d91386e879 Mon Sep 17 00:00:00 2001
+From: Petr Lautrbach <plautrba@redhat.com>
+Date: Thu, 10 Aug 2017 08:23:47 +0200
+Subject: [PATCH] bswap_* macros are defined in byteswap.h
+
+Fixes ImportError on s390x:
+/usr/lib64/python3.6/site-packages/setools/policyrep/_qpol.cpython-36m-s390x-linux-gnu.so: undefined symbol: bswap_32
+---
+ libqpol/policy.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/libqpol/policy.c b/libqpol/policy.c
+index ae3acb5..e412be0 100644
+--- a/libqpol/policy.c
++++ b/libqpol/policy.c
+@@ -28,6 +28,7 @@
+ 
+ #include "qpol_internal.h"
+ #include <assert.h>
++#include <byteswap.h>
+ #include <errno.h>
+ #include <fcntl.h>
+ #include <limits.h>
+-- 
+2.13.3
+

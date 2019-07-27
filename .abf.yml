@@ -1,6 +1,2 @@
 sources:
-  "apol.desktop:"	38c34feed03566a61e140d5b24b29aa538333ebb
-  "seaudit.desktop:"	2f72616d093eb0ecc674ee6bb6d152a88b8ae56b
-  "sediffx.desktop:"	9ccf78846280fa8c355b35c665f6955eaa432745
-  "setools-3.3.5.tar.gz:"	f935037dea4c3c33d138b495e84c968b6a116cb4
-  "setools.pam:"	e8ab5619510d079170be11f36d87395baac6341b
+  4.1.1.tar.gz: 3066327f03326088f11d068a56ef6fbafa281607
