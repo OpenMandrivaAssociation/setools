@@ -105,7 +105,7 @@ Python 3 modules designed to facilitate SELinux policy analysis.
 %package     gui
 Summary:     Policy analysis graphical tools for SELinux
 Requires:    python3-setools = %{version}-%{release}
-Requires:    python3-qt5
+Requires:    python-qt5
 Requires:    python3-networkx
 
 %description gui
