@@ -92,10 +92,8 @@ Python 2 modules designed to facilitate SELinux policy analysis.
 %package     -n python3-setools
 Summary:     Policy analysis tools for SELinux  
 Obsoletes:   setools-libs < 4.0.0
-Provides:	python3-setools
-# Remove before F30
-Provides: %{name}-python3 = %{version}-%{release}
-Obsoletes: %{name}-python3 < %{version}-%{release}
+Provides:    python3-setools = %{EVRD}
+Provides:    python-setools = %{EVRD}
 Requires:    python3-setuptools
 
 %description -n python3-setools
